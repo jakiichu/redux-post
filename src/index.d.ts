@@ -1,0 +1,1 @@
+declare type AppDispatch = typeof import('./store').store.dispatch
