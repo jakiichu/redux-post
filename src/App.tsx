@@ -1,23 +1,39 @@
-import './App.css'
-import {useEffect} from "react";
-import type {IRootStore} from "@/shared/interface/store";
-import {postsFetch} from "@/entities/post/list";
-import {useAppDispatch, useAppSelector} from "@/shared/lib/store/redux.ts";
+import type { UnknownAction } from "@reduxjs/toolkit";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import "./App.css";
+import { useAppSelector } from "./app/config/store/method";
+import { fetchPosts } from "./app/module/post/reducer";
+import { EStatus } from "./domain/enum/common/fetch-status";
 
 const App = () => {
-    const dispatch = useAppDispatch();
-    useEffect(() => {
-        dispatch(postsFetch({skip: 0, limit: 10}));
-    }, [dispatch]);
-    const {loading, error, data} = useAppSelector((state: IRootStore) => state.post);
-    console.log(loading, error, data)
+    const dispatch = useDispatch();
+    const { data, status, error } = useAppSelector((state) => state.posts);
 
+    useEffect(() => {
+        if (status === EStatus.IDLE) {
+            dispatch(fetchPosts() as unknown as UnknownAction);
+        }
+    }, [status, dispatch]);
+    console.log(data);
 
     return (
-        <>
+        <div>
+            <h2>Посты</h2>
+            {status === EStatus.LOADING && <p>Загрузка...</p>}
+            {status === EStatus.SUCCEEDED && (
+                <ul>
+                    {data.map((post) => (
+                        <li key={post.id}>
+                            <h3>{post.title}</h3>
+                            <p>{post.body}</p>
+                        </li>
+                    ))}
+                </ul>
+            )}
+            {status === EStatus.FAILED && <p>Ошибка: {error}</p>}
+        </div>
+    );
+};
 
-        </>
-    )
-}
-
-export default App
+export default App;

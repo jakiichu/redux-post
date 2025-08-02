@@ -1,1 +1,1 @@
-declare type AppDispatch = typeof import('./store').store.dispatch
+declare type AppDispatch = typeof import('./app/config/store').store.dispatch
