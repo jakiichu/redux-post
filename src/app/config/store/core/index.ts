@@ -1,4 +1,4 @@
-import { postsReducer } from "@/app/module/post/reducer";
+import { postsReducer } from "@/app/module/posts/case/reducer";
 import { configureStore } from "@reduxjs/toolkit";
 
 const store = configureStore({

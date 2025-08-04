@@ -1,34 +1,17 @@
+import { MAIN_INSTANCE_API } from "@/data/instance/main";
 import { PostRepository } from "@/data/repository/post";
 import { EStatus } from "@/domain/enum/common/fetch-status";
-import type { IPostsDto } from "@/domain/interface/post/dto";
 
 import { getAllPostsUseCase } from "@/domain/use-case/post/get-all";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import { initialState } from "../case/initial-state";
 
 const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-    const repository = new PostRepository(
-        axios.create({
-            baseURL: "https://jsonplaceholder.typicode.com/",
-            withCredentials: false,
-        })
-    );
+    const repository = new PostRepository(MAIN_INSTANCE_API);
     const useCase = new getAllPostsUseCase(repository);
     const posts = await useCase.execute();
     return posts;
 });
-
-interface IPostsState {
-    data: IPostsDto;
-    status: EStatus;
-    error: string | null;
-}
-
-const initialState: IPostsState = {
-    data: [],
-    status: EStatus.IDLE,
-    error: null,
-};
 
 const postsSlice = createSlice({
     name: "posts",
@@ -54,5 +37,6 @@ const postsSlice = createSlice({
             });
     },
 });
+
 const { actions: postsActions, reducer: postsReducer } = postsSlice;
 export { fetchPosts, postsActions, postsReducer };

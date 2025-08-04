@@ -1,38 +1,14 @@
-import type { UnknownAction } from "@reduxjs/toolkit";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { RouterProvider } from "@tanstack/react-router";
+import { Provider } from "react-redux";
 import "./App.css";
-import { useAppSelector } from "./app/config/store/method";
-import { fetchPosts } from "./app/module/post/reducer";
-import { EStatus } from "./domain/enum/common/fetch-status";
+import { store } from "./app/config/store/core";
+import { router } from "./app/router";
 
 const App = () => {
-    const dispatch = useDispatch();
-    const { data, status, error } = useAppSelector((state) => state.posts);
-
-    useEffect(() => {
-        if (status === EStatus.IDLE) {
-            dispatch(fetchPosts() as unknown as UnknownAction);
-        }
-    }, [status, dispatch]);
-    console.log(data);
-
     return (
-        <div>
-            <h2>Посты</h2>
-            {status === EStatus.LOADING && <p>Загрузка...</p>}
-            {status === EStatus.SUCCEEDED && (
-                <ul>
-                    {data.map((post) => (
-                        <li key={post.id}>
-                            <h3>{post.title}</h3>
-                            <p>{post.body}</p>
-                        </li>
-                    ))}
-                </ul>
-            )}
-            {status === EStatus.FAILED && <p>Ошибка: {error}</p>}
-        </div>
+        <Provider store={store}>
+            <RouterProvider router={router} />
+        </Provider>
     );
 };
 
